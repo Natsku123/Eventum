@@ -1,0 +1,119 @@
+<div *ngIf="expired && !currentUser; else notExpired">
+  <div class="w-100 mx-auto text-center">
+    <h3>
+      Event <i>{{event.name}}</i> is no longer accepting sign ups.
+    </h3>
+  </div>
+</div>
+<ng-template #notExpired>
+  <div *ngIf="isLoaded && notSent; else sentOrLoading" class="m-2">
+    <div *ngIf="event.available > 0 || currentUser; else notAvailable">
+      <div class="w-100 mx-auto text-center">
+        <h1>
+          {{event.name}}
+        </h1>
+      </div>
+      <div *ngIf="currentUser" class="mb-3">
+        <mat-accordion>
+          <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Admin
+              </mat-panel-title>
+              <mat-panel-description>
+                Participants list and edit event
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="row w-50">
+              <div class="col-4 my-auto">Add image to event</div>
+              <div class="col-2"><button mat-raised-button (click)="openUploadDialog()">Add image</button></div>
+              <div *ngIf="event.available > 0" class="col-4 my-auto">Hide event</div>
+              <div *ngIf="event.available > 0" class="col-2"><button mat-raised-button (click)="makeHidden()" color="warn">Hide</button></div>
+              <div *ngIf="event.available == 0" class="col-4 my-auto">Show event</div>
+              <div *ngIf="event.available == 0" class="col-2"><button mat-raised-button (click)="makeAvailable()" color="accent" class="text-white">Show</button></div>
+            </div>
+            <p>{{adminError}}</p>
+            <div class="row mt-2">
+              <div class="col-sm-6 col-xl-12">
+                <mat-table [dataSource]="participants" class="mat-elevation-z8" matSort>
+                  <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let participant">{{participant.id}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                    <mat-cell *matCellDef="let participant">{{participant.name}}</mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="paid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Paid</mat-header-cell>
+                    <mat-cell *matCellDef="let participant">
+                      <button mat-icon-button *ngIf="participant.paid > 0; else notPaid" (click)="unPay(participant.participation_id)"><mat-icon>done</mat-icon></button>
+                      <ng-template #notPaid><button mat-icon-button color="primary" (click)="pay(participant.participation_id)"><mat-icon>attach_money</mat-icon></button></ng-template>
+                    </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </mat-table>
+              </div>
+              <div class="col-sm-6 col-xl-12">
+                <dynamic-form [fields]="roleForm" (submit)="submitRoles($event)"></dynamic-form>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+      <div class="row">
+        <div *ngIf="eventImage" class="col-lg-6 col-sm-6 col-xl-12"><img class="rounded mx-auto d-block" src="{{eventImage.image}}" /></div>
+        <div class="col-lg-6 col-sm-6 col-xl-12">
+          <div class="ml-5 w-75">
+            <p>{{removeTags(event.description)}}</p>
+            <h5>Limits</h5>
+            <div *ngFor="let limit of event.limits" class="w-50">
+              <p>{{limit.role.name}}: <b>{{limit.filled}}/{{limit.size}}</b></p>
+              <mat-progress-bar mode="determinate" value="{{getProgress(limit.filled, limit.size)}}"></mat-progress-bar>
+            </div>
+            <mat-divider class="my-3"></mat-divider>
+            <h5>Prices</h5>
+            <div *ngFor="let price of event.prices">
+              <p>{{price.role.name}}: <b>{{price.price}}€</b></p>
+            </div>
+            <mat-divider class="my-3"></mat-divider>
+            <p>Closing: <b>{{event.expire | date}}</b></p>
+            <p>Last updated: <b>{{event.updated | date}}</b></p>
+          </div>
+        </div>
+        <div *ngIf="!eventIsFull" class="mx-auto w-75 mr-5 mt-3">
+          <h2 class="w-100 text-center">Sign up</h2>
+          <dynamic-form [fields]="regConfig" (submit)="submit($event)"></dynamic-form>
+          <p>Terms of service can be found <a routerLink="/terms" routerLinkActive="active">here</a>.</p>
+          <p>Your email address will be used to confirm your membership.</p>
+        </div>
+        <div *ngIf="eventIsFull">
+          <h3 class="w-100 text-center">Event is full.</h3>
+        </div>
+      </div>
+    </div>
+    <ng-template #notAvailable>
+      <div class="w-100 mx-auto text-center">
+        <h3>
+          Sign up for event <i>{{event.name}}</i> is not yet open.
+        </h3>
+      </div>
+    </ng-template>
+  </div>
+  <ng-template #sentOrLoading>
+    <div *ngIf="!notSent && submitFailed; else notFailed">
+      <h1>Sign up form couldn't be sent :/</h1><h3>Please contact administrator <a href="mailto:{{adminEmail}}">here</a>!</h3>
+    </div>
+    <ng-template #notFailed>
+      <div *ngIf="!notSent && isLoaded; else stillLoading">
+        <h1>You have signed up for <i>{{event.name}}</i>!</h1>
+      </div>
+      <ng-template #stillLoading>
+        <loading-icon></loading-icon>
+      </ng-template>
+    </ng-template>
+  </ng-template>
+</ng-template>
+
+

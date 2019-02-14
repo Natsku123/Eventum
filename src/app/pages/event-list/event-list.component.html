@@ -1,0 +1,19 @@
+<div class="w-75 mx-auto mt-5">
+  <h1 class="mx-auto w-100 text-center">Events</h1>
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  </mat-form-field>
+  <mat-table [dataSource]="events">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <mat-cell *matCellDef="let event"><a routerLink="/events/{{event.id}}" routerLinkActive="active" class="nav-link">{{event.name}}</a></mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="expire">
+      <mat-header-cell *matHeaderCellDef>Closing</mat-header-cell>
+      <mat-cell *matCellDef="let event"><!--<p *ngIf="TimeDelta(event.expire) > 30; else showDays">--><p class="my-auto">{{event.expire | date:'dd.MM.yyyy'}}</p><!--<ng-template #showDays><b>{{TimeDelta(event.expire)}} päivää</b></ng-template>--></mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row  *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>

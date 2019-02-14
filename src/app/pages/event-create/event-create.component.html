@@ -1,0 +1,19 @@
+<div *ngIf="isLoaded; else stillLoading">
+  <div class="row">
+    <div class="col-sm-6">
+      <h3>Event information</h3>
+      <dynamic-form [fields]="basicFields" (submit)="submitEvent($event)"></dynamic-form>
+      <mat-divider class="mt-2"></mat-divider>
+      <h5>Additional questions</h5>
+      <p *ngFor="let question of eventForm">{{question.label}} - {{question.type}}</p>
+    </div>
+    <div class="col-sm-6">
+      <h4>Events additional questions</h4>
+      <p>ATTENTION! Add these BEFORE submitting the new event!</p>
+      <dynamic-form [fields]="newEventForm" (submit)="submitEventForm($event)"></dynamic-form>
+    </div>
+  </div>
+</div>
+<ng-template #stillLoading>
+  <loading-icon></loading-icon>
+</ng-template>

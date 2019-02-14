@@ -1,0 +1,19 @@
+<input type="file" #file style="display: none" (change)="onFileAdded()" />
+<div style="height: 100%">
+  <h1 mat-dialog-title>Add image to event</h1>
+  <div>
+    <button [disabled]="uploading || uploadSuccessful" mat-raised-button color="primary" (click)="addFile()">
+      Add image
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <h4 mat-line>{{image.name}}</h4>
+    <mat-progress-bar *ngIf="progress" mode="determinate" [value]="progress.progress | async"></mat-progress-bar>
+  </mat-dialog-content>
+
+  <mat-dialog-actions style="justify-content: flex-end">
+    <button *ngIf="showCancelButton" mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!canBeClosed" (click)="closeDialog()">{{primaryButtonText}}</button>
+  </mat-dialog-actions>
+</div>

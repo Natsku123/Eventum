@@ -1,0 +1,25 @@
+mat-row.participant-detail-row {
+  height: auto;
+  min-height: 0;
+}
+
+mat-row.participant-expanded-eow {
+  height: auto;
+}
+
+mat-row.participant-row:not(.participant-expanded-row):hover {
+  background: #f5f5f5;
+}
+
+mat-row.participant-row:not(.participant-expanded-row):active {
+  background: #efefef;
+}
+
+mat-cell.participant-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+mat-row.participant-row mat-cell {
+  border-bottom-width: 0;
+}

@@ -1,0 +1,57 @@
+<div class="w-75 mx-auto">
+  <h3 class="w-100 text-center">Participants</h3>
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  </mat-form-field>
+  <div class="mat-elevation-z8">
+    <mat-table [dataSource]="events" matSort multiTemplateDataRows>
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+        <mat-cell *matCellDef="let event">{{event.name}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="expire">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Expires</mat-header-cell>
+        <mat-cell *matCellDef="let event">{{event.expire | date}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="participants">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Participants</mat-header-cell>
+        <mat-cell *matCellDef="let event">{{event.participants?.length}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="expandedParticipants">
+        <mat-cell *matCellDef="let event" [attr.colspan]="eventColumns.length">
+          <div class="participant-detail w-100" [@detailExpand]="event == expandedParticipant ? 'expanded' : 'collapsed'">
+            <div class="row border-bottom mt-3">
+              <div class="col-sm-1 my-auto"><b>ID 1</b></div>
+              <div class="col-sm-2 my-auto"><b>Name</b></div>
+              <div class="col-sm-1 my-auto"><b>Role</b></div>
+              <div class="col-sm-3 my-auto"><b>Email</b></div>
+              <div class="col-sm-1 my-auto"><b>ID 2</b></div>
+              <div class="col-sm-2 my-auto"><b>Paid</b></div>
+            </div>
+            <div *ngFor="let participant of event.participants" class="row">
+              <div class="col-sm-1 my-auto"> {{participant.participation_id}} </div>
+              <div class="col-sm-2 my-auto"> <a (click)="showForm(participant)">{{participant.name }}</a> </div>
+              <div class="col-sm-1 my-auto"> {{participant.role.name }} </div>
+              <div class="col-sm-3 my-auto"> {{participant.email }}</div>
+              <div class="col-sm-1 my-auto"> {{participant.id }} </div>
+              <div class="col-sm-2 my-auto mt-2">
+                <button mat-icon-button *ngIf="participant.paid > 0; else notPaid" (click)="unPay(participant.participation_id)"><mat-icon >done</mat-icon></button>
+                <ng-template #notPaid><button mat-icon-button *ngIf="participant.paid == 0" color="primary" (click)="pay(participant.participation_id)"><mat-icon>attach_money</mat-icon></button></ng-template>
+              </div>
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="eventColumns"></mat-header-row>
+      <mat-row  *matRowDef="let event; columns: eventColumns;"
+                matRipple
+                class="participant-row"
+                [class.participant-expanded-row]="expandedParticipant === event"
+                (click)="expandedParticipant = expandedParticipant === event ? null : event">></mat-row>
+      <mat-row *matRowDef="let row; columns: ['expandedParticipants']" class="participant-detail-row"></mat-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+  <p>ID 1 = participant_id, ID 2 = human_id</p>
+</div>
+

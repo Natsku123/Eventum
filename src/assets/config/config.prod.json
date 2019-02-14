@@ -1,0 +1,9 @@
+{
+  "env": {
+    "name": "PRODUCTION"
+  },
+  "apiAddress": "https://api.example.com/v1.0",
+  "apiAuthAddress": "https://api.example.com/auth",
+  "organization": "[NAME HERE]",
+  "adminEmail": "it@example.com"
+}

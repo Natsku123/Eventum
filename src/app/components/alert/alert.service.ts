@@ -1,0 +1,47 @@
+/*
+This service is used to manage alerts created by errors and such
+*/
+
+import { Injectable } from '@angular/core';
+import { Router, NavigationStart } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+
+@Injectable({providedIn: 'root'})
+export class AlertService {
+  private subject = new Subject<any>();
+  private keepAfterNavigationChange = false;
+
+  constructor(private router: Router) {
+
+    // Get event from router
+    router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        if (this.keepAfterNavigationChange) {
+          this.keepAfterNavigationChange = false;
+        } else {
+          this.subject.next();
+        }
+      }
+    });
+  }
+
+  success(message: string, keepAfterNavigationChange = false) {
+
+    // Create new success alert
+    this.keepAfterNavigationChange = keepAfterNavigationChange;
+    this.subject.next({type: 'success', text: message});
+  }
+
+  error(message: string, keepAfterNavigationChange = false) {
+
+    // Create new error alert
+    this.keepAfterNavigationChange = keepAfterNavigationChange;
+    this.subject.next({type: 'error', text: message});
+  }
+
+  getMessage(): Observable<any> {
+
+    // Return alert
+    return this.subject.asObservable();
+  }
+}

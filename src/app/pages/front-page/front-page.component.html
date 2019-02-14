@@ -1,0 +1,24 @@
+<div *ngIf="isLoaded; else stillLoading">
+  <h1>Welcome to Eventum</h1>
+  <div class="row">
+    <div class="col-sm-6">
+      <h4>What is eventum?</h4>
+      <p>Eventum is an open-source event signing up platform mainly design for student clubs and guilds.</p>
+      <p>There is still something to be done...</p>
+      <ul>
+        <li>Improve user experience for admins especially.</li>
+        <li>Improve UI to look even better</li>
+      </ul>
+    </div>
+    <div class="col-sm-6">
+      <h3>Next Event is:</h3>
+      <h5 *ngIf="nextEvent"><b><i>{{nextEvent.name}}</i></b></h5>
+      <p *ngIf="nextEvent">Closing: <b>{{nextEvent.expire | date}}</b></p>
+      <p *ngIf="!nextEvent">No events found.</p>
+    </div>
+  </div>
+
+</div>
+<ng-template #stillLoading>
+  <loading-icon></loading-icon>
+</ng-template>
